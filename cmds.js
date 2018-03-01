@@ -119,6 +119,7 @@ exports.playCommand = rl => {
     const playCont = () => {
         if(porpreguntar.length === 0){
             log(`${giveColor('No hay preguntas disponibles', 'red')}`);
+            log("Fin del examen");
             log(`${giveColor('Has tenido', 'red')}: ${giveColor(score, 'green')} aciertos`);
             rl.prompt();
         }else{
@@ -127,12 +128,13 @@ exports.playCommand = rl => {
             let quiz = porpreguntar[id];
             rl.question(giveColor(quiz.question+"\n", 'red'), answer => {
                 if(quiz.answer.toLowerCase() === answer){
-                    log('correcto - Lleva ' +score+ ' aciertos', 'green');
                     score++;
+                    log('correcto - Lleva ' +score+ ' aciertos', 'green');
                     porpreguntar.splice(id, 1);
                     playCont();
                 }else{
-                    bigLog('incorrecto', 'red');
+                    log('incorrecto', 'red');
+                    log("Fin del examen");
                     log(`${giveColor('Has tenido', 'red')}: ${giveColor(score, 'green')} aciertos`);
                     rl.prompt();
                 }

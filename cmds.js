@@ -92,15 +92,17 @@ exports.testCommand = (rl, id) => {
     }else {
         try {
             const quiz = model.getByIndex(id);
-            rl.question(log(`${giveColor(quiz.question, 'red')}`), answer => {
-                if(quiz.answer === answer){
-                bigLog('acierto', 'green');
-                rl.prompt();
-            }else{
-                bigLog('fallo', 'red');
-                rl.prompt();
-            }
-        });
+            rl.question(giveColor(quiz.question+"\n", 'red'), answer => {
+                if(quiz.answer.toLowerCase() === answer){
+                    log("Su respuesta es:");
+                    bigLog('correcto', 'green');
+                    rl.prompt();
+                }else{
+                    log("Su respuesta es:");
+                    bigLog('incorrecto', 'red');
+                    rl.prompt();
+                }
+            });
         } catch (error) {
             errorLog(error.message);
             rl.prompt();
@@ -123,9 +125,9 @@ exports.playCommand = rl => {
             let azar = Math.random()*(porpreguntar.length-1);
             let id = Math.round(azar);
             let quiz = porpreguntar[id];
-            rl.question(log(`${giveColor(quiz.question, 'red')}`), answer => {
-                if(quiz.answer === answer){
-                    bigLog('correcto', 'green');
+            rl.question(giveColor(quiz.question+"\n", 'red'), answer => {
+                if(quiz.answer.toLowerCase() === answer){
+                    log('correcto - Lleva ' +score+ ' aciertos', 'green');
                     score++;
                     porpreguntar.splice(id, 1);
                     playCont();

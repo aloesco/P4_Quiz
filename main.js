@@ -15,7 +15,7 @@ bigLog('CORE Quiz', 'blue');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: giveColor("quiz> ", "blue"),
+    prompt: giveColor("quiz > ", "blue"),
     completer: (line) => {
         const completions = 'h help list show add delete edit test p play credits q quit'.split(' ');
         const hits = completions.filter((c) => c.startsWith(line));

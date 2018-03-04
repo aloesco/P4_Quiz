@@ -95,11 +95,11 @@ exports.testCommand = (rl, id) => {
             rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
                 if(quiz.answer.toLowerCase() === answer){
                     log("Su respuesta es:");
-                    bigLog('Correcta', 'green');
+                    log('Correcta', 'green');
                     rl.prompt();
                 }else{
                     log("Su respuesta es:");
-                    bigLog('Incorrecta', 'red');
+                    log('Incorrecta', 'red');
                     rl.prompt();
                 }
             });

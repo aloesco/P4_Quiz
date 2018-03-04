@@ -92,14 +92,14 @@ exports.testCommand = (rl, id) => {
     }else {
         try {
             const quiz = model.getByIndex(id);
-            rl.question(giveColor(quiz.question+"\n", 'red'), answer => {
+            rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
                 if(quiz.answer.toLowerCase() === answer){
                     log("Su respuesta es:");
-                    bigLog('correcta', 'green');
+                    bigLog('Correcta', 'green');
                     rl.prompt();
                 }else{
                     log("Su respuesta es:");
-                    bigLog('incorrecta', 'red');
+                    bigLog('Incorrecta', 'red');
                     rl.prompt();
                 }
             });
@@ -120,22 +120,22 @@ exports.playCommand = rl => {
         if(porpreguntar.length === 0){
             log(`${giveColor('No hay preguntas disponibles', 'red')}`);
             log("Fin del examen");
-            log(`${giveColor('Has tenido', 'red')}: ${giveColor(score, 'green')} aciertos`);
+            log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
             rl.prompt();
         }else{
             let azar = Math.random()*(porpreguntar.length-1);
             let id = Math.round(azar);
             let quiz = porpreguntar[id];
-            rl.question(giveColor(quiz.question+"\n", 'red'), answer => {
+            rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
                 if(quiz.answer.toLowerCase() === answer){
                     score++;
-                    log('correcto - Lleva ' +score+ ' aciertos', 'green');
+                    log('CORRECTO - Lleva ' +score+ ' aciertos', 'green');
                     porpreguntar.splice(id, 1);
                     playCont();
                 }else{
-                    log('incorrecto', 'red');
+                    log('INCORRECTO', 'red');
                     log("Fin del examen");
-                    log(`${giveColor('Has tenido', 'red')}: ${giveColor(score, 'green')} aciertos`);
+                    log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
                     rl.prompt();
                 }
             });

@@ -93,7 +93,7 @@ exports.testCommand = (rl, id) => {
         try {
             const quiz = model.getByIndex(id);
             rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
-                if(quiz.answer.toLowerCase() === answer){
+                if(quiz.answer.toLowerCase().trim() === answer.toLowerCase().trim()){
                     log("Su respuesta es:");
                     log('Correcta', 'green');
                     rl.prompt();
@@ -119,7 +119,7 @@ exports.playCommand = rl => {
     const playCont = () => {
         if(porpreguntar.length === 0){
             log(`${giveColor('No hay preguntas disponibles', 'red')}`);
-            log("Fin del examen");
+            log("Fin");
             log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
             rl.prompt();
         }else{
@@ -127,14 +127,15 @@ exports.playCommand = rl => {
             let id = Math.round(azar);
             let quiz = porpreguntar[id];
             rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
-                if(quiz.answer.toLowerCase() === answer){
+                if(quiz.answer.toLowerCase().trim() === answer.toLowerCase().trim()){
                     score++;
-                    log('CORRECTO - Lleva ' +score+ ' aciertos', 'green');
+                    log('CORRECTO', 'green');
+                    log('Lleva ' +score+ ' aciertos', 'green');
                     porpreguntar.splice(id, 1);
                     playCont();
                 }else{
                     log('INCORRECTO', 'red');
-                    log("Fin del examen");
+                    log("Fin");
                     log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
                     rl.prompt();
                 }

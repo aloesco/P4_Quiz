@@ -51,66 +51,66 @@ const validarId = id => {
 
 exports.showCommand = (rl, id) => {
     validarId(id)
-        .then(id => models.quiz.findById(id))
-.then(quiz => {
+    .then(id => models.quiz.findById(id))
+    .then(quiz => {
         if(!quiz){
-        throw new Error(`No existe un quiz asociado al id=${id}.`);
-    }else{
-        log(`[${giveColor(quiz.id, 'magenta')}]: ${quiz.question} ${giveColor('=>', 'magenta')} ${quiz.answer}`);
-    }
-})
-.catch(error => {
-        errorlog(error.message);
-})
-.then(() => {
-        rl.prompt();
-});
+            throw new Error(`No existe un quiz asociado al id=${id}.`);
+        }else{
+            log(`[${giveColor(quiz.id, 'magenta')}]: ${quiz.question} ${giveColor('=>', 'magenta')} ${quiz.answer}`);
+        }
+    })
+    .catch(error => {
+            errorLog(error.message);
+    })
+    .then(() => {
+            rl.prompt();
+    });
 
 };
 
 const makeQuestion = (rl, text) => {
     return new Sequelize.Promise( (resolve, reject) => {
         rl.question(giveColor(text, "red"), answer=> {
-        resolve(answer.trim());
-});
-});
+            resolve(answer.trim());
+        });
+    });
 };
 
 exports.addCommand = rl => {
     makeQuestion(rl, 'Introduzca una pregunta: ')
-        .then(q => {
+    .then(q => {
         return makeQuestion(rl, "Introduzcala la  respuesta: ")
-            .then(a => {
+    .then(a => {
             return{question: q, answer: a};
-});
-})
-.then(quiz => {
+    });
+    })
+    .then(quiz => {
         return models.quiz.create(quiz);
-})
-.then(quiz => {
+    })
+    .then(quiz => {
         log(` ${giveColor('Se ha añadido', 'magenta')}: ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
-})
-.catch(Sequelize.ValidationError, error => {
+    })
+    .catch(Sequelize.ValidationError, error => {
         errorLog('El quiz es erroneo: ');
-    error.errors.forEach(({message}) => errorlog(message));
-})
-.catch(error => {
+        error.errors.forEach(({message}) => errorlog(message));
+    })
+    .catch(error => {
         errorLog(error.message);
-})
-.then(() => {
-        rl.prompt();
-});
+    })
+    .then(() => {
+            rl.prompt();
+    });
 };
 
 exports.deleteCommand = (rl, id) => {
     validarId(id)
-        .then(id => models.quiz.destroy({where: {id}}))
-.catch(error => {
-        errorLog(error.message);
-})
-.then(()=> {
-        rl.prompt();
-});
+    .then(id => models.quiz.destroy({where: {id}}))
+    .catch(error => {
+            errorLog(error.message);
+    })
+    .then(()=> {
+            rl.prompt();
+    });
 };
 
 exports.editCommand = (rl, id) => {
@@ -134,40 +134,40 @@ exports.editCommand = (rl, id) => {
             rl.prompt();
         }
     }*/
-    validarId(id)
+        validarId(id)
         .then(id => models.quiz.findById(id))
-.then(quiz => {
-        if (!quiz){
-        throw new Error(`No existe un quiz asociado al id=${id}.`);
-    }
-    process.stdout.isTTY && setTimeout(() => { rl.write(quiz.question)},0);
-    return makeQuestion(rl, 'Introduzca la pregunta: ')
-        .then(q => {
-        process.stdout.isTTY && setTimeout(() => { rl.write(quiz.answer)},0);
-    return makeQuestion(rl, 'Introduzca la respuesta: ')
-        .then(a => {
-        quiz.question = q;
-    quiz.answer = a;
-    return quiz;
-});
-});
-})
-.then(quiz => {
-        return quiz.save();
-})
-.then(quiz => {
-        log(` Se ha cambiado el quiz ${giveColor(id, 'magenta')} por : ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
-})
-.catch(Sequelize.ValidationError, error => {
-        errorLog("El quiz es erroneo: ");
-    error.errors.forEach(({message}) => errorlog(message));
-})
-.catch(error => {
-        errorLog(error.message);
-})
-.then(() => {
-        rl.prompt();
-});
+        .then(quiz => {
+            if (!quiz){
+                throw new Error(`No existe un quiz asociado al id=${id}.`);
+            }
+            process.stdout.isTTY && setTimeout(() => { rl.write(quiz.question)},0);
+            return makeQuestion(rl, 'Introduzca la pregunta: ')
+            .then(q => {
+            process.stdout.isTTY && setTimeout(() => { rl.write(quiz.answer)},0);
+        return makeQuestion(rl, 'Introduzca la respuesta: ')
+            .then(a => {
+            quiz.question = q;
+        quiz.answer = a;
+        return quiz;
+    });
+    });
+    })
+    .then(quiz => {
+            return quiz.save();
+    })
+    .then(quiz => {
+            log(` Se ha cambiado el quiz ${giveColor(id, 'magenta')} por : ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
+    })
+    .catch(Sequelize.ValidationError, error => {
+            errorLog("El quiz es erroneo: ");
+        error.errors.forEach(({message}) => errorlog(message));
+    })
+    .catch(error => {
+            errorLog(error.message);
+    })
+    .then(() => {
+            rl.prompt();
+    });
 };
 
 exports.testCommand = (rl, id) => {
@@ -194,27 +194,29 @@ exports.testCommand = (rl, id) => {
         }
     }*/
     validarId(id)
-        .then(id => models.quiz.findById(id))
-.then(quiz => {
+    .then(id => models.quiz.findById(id))
+    .then(quiz => {
         if (!quiz){
-        throw new Error(`No existe un quiz asociado al id=${id}.`);
-    }else{
-        //log(`${giveColor(quiz.question, "yellow")}`);
-        return makeQuestion(rl, quiz.question+": ")
-            .then(a => {
-            if(quiz.answer.toLowerCase().trim() === a.toLowerCase().trim()){
-            log("Su respuesta es:");
-            log('Correcta', 'green');
-            rl.prompt();
+            throw new Error(`No existe un quiz asociado al id=${id}.`);
         }else{
-            log("Su respuesta es:");
-            log('Incorrecta', 'red');
-            rl.prompt();
+            return makeQuestion(rl, quiz.question+": ")
+            .then(a => {
+                if(quiz.answer.toLowerCase().trim() === a.toLowerCase().trim()){
+                    log("Su respuesta es:");
+                    log('Correcta', 'green');
+                    rl.prompt();
+                }else{
+                    log("Su respuesta es:");
+                    log('Incorrecta', 'red');
+                    rl.prompt();
+                }
+            });
         }
+    })
+    .catch(error => {
+        errorLog(error.message);
+        rl.prompt();
     });
-    }
-});
-
 };
 
 exports.playCommand = rl => {

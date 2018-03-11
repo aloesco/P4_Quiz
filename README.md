@@ -2,4 +2,4 @@ La aplicación consiste en un juego de preguntas y respuesta que se ejecutará med
 con sus respuestas, borrar preguntas, jugarlas de un modo aleatorio, probar una de ellas, listar las preguntas, y además
 cuenta con un menú de ayuda.
 
-Práctica realizada por: Alvaro Escobosa Lopez y Javier Martinez Teba
+Práctica realizada por: Alvaro Escobosa Lopez

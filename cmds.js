@@ -114,43 +114,23 @@ exports.deleteCommand = (rl, id) => {
 };
 
 exports.editCommand = (rl, id) => {
-    /*if(typeof id === "undefined"){
-        errorLog(`Falta el parámetro id.`);
-        rl.prompt();
-    }else{
-        try{
-            const quiz = model.getByIndex(id);
-            process.stdout.isTTY && setTimeout(() => {rl.write(quiz.question)}, 0);
-            rl.question(giveColor('Introduce una pregunta: ', 'red'), question => {
-                process.stdout.isTTY && setTimeout(() => {rl.write(quiz.answer)}, 0);
-                rl.question(giveColor('Introduce la respuesta: ', 'red'), answer => {
-                    model.update(id, question, answer);
-                    log(`${giveColor('Se ha cambiado una pregunta. Ahora es', 'magenta')}: ${question} ${giveColor('=>', 'magenta')} ${answer}`);
-                    rl.prompt();
-                });
-            });
-        }catch(error){
-            errorLog(error.message);
-            rl.prompt();
+    validarId(id)
+    .then(id => models.quiz.findById(id))
+    .then(quiz => {
+        if (!quiz){
+            throw new Error(`No existe un quiz asociado al id=${id}.`);
         }
-    }*/
-        validarId(id)
-        .then(id => models.quiz.findById(id))
-        .then(quiz => {
-            if (!quiz){
-                throw new Error(`No existe un quiz asociado al id=${id}.`);
-            }
-            process.stdout.isTTY && setTimeout(() => { rl.write(quiz.question)},0);
-            return makeQuestion(rl, 'Introduzca la pregunta: ')
-            .then(q => {
+        process.stdout.isTTY && setTimeout(() => { rl.write(quiz.question)},0);
+        return makeQuestion(rl, 'Introduzca la pregunta: ')
+        .then(q => {
             process.stdout.isTTY && setTimeout(() => { rl.write(quiz.answer)},0);
-        return makeQuestion(rl, 'Introduzca la respuesta: ')
+            return makeQuestion(rl, 'Introduzca la respuesta: ')
             .then(a => {
-            quiz.question = q;
-        quiz.answer = a;
-        return quiz;
-    });
-    });
+                quiz.question = q;
+                quiz.answer = a;
+                return quiz;
+            });
+        });
     })
     .then(quiz => {
             return quiz.save();

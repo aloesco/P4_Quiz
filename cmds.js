@@ -171,28 +171,6 @@ exports.editCommand = (rl, id) => {
 };
 
 exports.testCommand = (rl, id) => {
-    /*if(typeof id === "undefined"){
-        errorLog(`Falta el parámetro id.`);
-        rl.prompt();
-    }else {
-        try {
-            const quiz = model.getByIndex(id);
-            rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
-                if(quiz.answer.toLowerCase().trim() === answer.toLowerCase().trim()){
-                    log("Su respuesta es:");
-                    log('Correcta', 'green');
-                    rl.prompt();
-                }else{
-                    log("Su respuesta es:");
-                    log('Incorrecta', 'red');
-                    rl.prompt();
-                }
-            });
-        } catch (error) {
-            errorLog(error.message);
-            rl.prompt();
-        }
-    }*/
     validarId(id)
     .then(id => models.quiz.findById(id))
     .then(quiz => {
@@ -223,10 +201,10 @@ exports.playCommand = rl => {
     let score = 0;
     let porpreguntar = [];
     models.quiz.findAll()
-        .then(quizzes => {
+    .then(quizzes => {
         quizzes.forEach((quiz, id) => {
-        porpreguntar[id] = quiz;
-});
+            porpreguntar[id] = quiz;
+        });
     const playCont = () => {
         if(porpreguntar.length === 0){
             log(`${giveColor('No hay preguntas disponibles', 'red')}`);
@@ -236,8 +214,9 @@ exports.playCommand = rl => {
         }else{
             let id = Math.round(Math.random()*(porpreguntar.length-1));
             let quiz = porpreguntar[id];
-            /*rl.question(giveColor(quiz.question+" ", 'yellow'), answer => {
-                if(quiz.answer.toLowerCase().trim() === answer.toLowerCase().trim()){
+            return makeQuestion(rl, quiz.question+": ")
+            .then(a => {
+                if(quiz.answer.toLowerCase().trim() === a.toLowerCase().trim()){
                     score++;
                     log('CORRECTO', 'green');
                     log('Lleva ' +score+ ' aciertos', 'green');
@@ -248,25 +227,11 @@ exports.playCommand = rl => {
                     log("Fin");
                     log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
                     rl.prompt();
-                }*/
-            return makeQuestion(rl, quiz.question+": ")
-                .then(a => {
-                if(quiz.answer.toLowerCase().trim() === a.toLowerCase().trim()){
-                score++;
-                log('CORRECTO', 'green');
-                log('Lleva ' +score+ ' aciertos', 'green');
-                porpreguntar.splice(id, 1);
-                playCont();
-            }else{
-                log('INCORRECTO', 'red');
-                log("Fin");
-                log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
-                rl.prompt();
-            }
-        })
-        .catch(error => {
-                errorLog(error.message);
-        });
+                }
+            })
+            .catch(error => {
+                    errorLog(error.message);
+            });
         }
     };
     playCont();

@@ -4,30 +4,30 @@ const {models} = require('./model');
 const {Sequelize} = require('sequelize');
 
 
-exports.helpCommands = rl => {
-    console.log('Comandos:');
-    console.log(' h|help - Muestra esta ayuda.');
-    console.log(' list - Listar los quizes existentes.');
-    console.log(' show <id> - Muestra la pregunta y respuesta del quiz indicado.');
-    console.log(' add - Añadir una nueva pregunta con su respuesta correspondiente.');
-    console.log(' delete <id> - Borrar la pregunta y respuesta indicadas.');
-    console.log(' edit <id> - Editar la pregunta y/o respuesta indicada.');
-    console.log(' test <id> - Probar la pregunta indicada.');
-    console.log(' p|play - Jugar.');
-    console.log(' credits - Créditos.');
-    console.log(' q|quit - Salir del juego.');
+exports.helpCommands = (socket, rl) => {
+    console.log(socket, 'Comandos:');
+    console.log(socket, ' h|help - Muestra esta ayuda.');
+    console.log(socket, ' list - Listar los quizes existentes.');
+    console.log(socket, ' show <id> - Muestra la pregunta y respuesta del quiz indicado.');
+    console.log(socket, ' add - Añadir una nueva pregunta con su respuesta correspondiente.');
+    console.log(socket, ' delete <id> - Borrar la pregunta y respuesta indicadas.');
+    console.log(socket, ' edit <id> - Editar la pregunta y/o respuesta indicada.');
+    console.log(socket, ' test <id> - Probar la pregunta indicada.');
+    console.log(socket, ' p|play - Jugar.');
+    console.log(socket, ' credits - Créditos.');
+    console.log(socket, ' q|quit - Salir del juego.');
     rl.prompt();
 };
 
-exports.listCommand = rl => {
+exports.listCommand = (socket, rl) => {
     models.quiz.findAll()
         .then(quizzes => {
         quizzes.forEach(quiz => {
-        log(`[${giveColor(quiz.id, 'magenta')}]: ${quiz.question}`);
+        log(socket, `[${giveColor(quiz.id, 'magenta')}]: ${quiz.question}`);
 });
 })
 .catch(error => {
-        errorlog(error.message);
+        errorlog(socket, error.message);
 })
 .then(() => {
         rl.prompt();
@@ -49,18 +49,18 @@ const validarId = id => {
 });
 };
 
-exports.showCommand = (rl, id) => {
+exports.showCommand = (socket, rl, id) => {
     validarId(id)
     .then(id => models.quiz.findById(id))
     .then(quiz => {
         if(!quiz){
             throw new Error(`No existe un quiz asociado al id=${id}.`);
         }else{
-            log(`[${giveColor(quiz.id, 'magenta')}]: ${quiz.question} ${giveColor('=>', 'magenta')} ${quiz.answer}`);
+            log(socket, `[${giveColor(quiz.id, 'magenta')}]: ${quiz.question} ${giveColor('=>', 'magenta')} ${quiz.answer}`);
         }
     })
     .catch(error => {
-            errorLog(error.message);
+            errorLog(socket, error.message);
     })
     .then(() => {
             rl.prompt();
@@ -76,7 +76,7 @@ const makeQuestion = (rl, text) => {
     });
 };
 
-exports.addCommand = rl => {
+exports.addCommand = (socket, rl) => {
     makeQuestion(rl, 'Introduzca una pregunta: ')
     .then(q => {
         return makeQuestion(rl, "Introduzcala la  respuesta: ")
@@ -88,32 +88,32 @@ exports.addCommand = rl => {
         return models.quiz.create(quiz);
     })
     .then(quiz => {
-        log(` ${giveColor('Se ha añadido', 'magenta')}: ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
+        log(socket, ` ${giveColor('Se ha añadido', 'magenta')}: ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
     })
     .catch(Sequelize.ValidationError, error => {
-        errorLog('El quiz es erroneo: ');
+        errorLog(socket, 'El quiz es erroneo: ');
         error.errors.forEach(({message}) => errorlog(message));
     })
     .catch(error => {
-        errorLog(error.message);
+        errorLog(socket, error.message);
     })
     .then(() => {
             rl.prompt();
     });
 };
 
-exports.deleteCommand = (rl, id) => {
+exports.deleteCommand = (socket, rl, id) => {
     validarId(id)
     .then(id => models.quiz.destroy({where: {id}}))
     .catch(error => {
-            errorLog(error.message);
+            errorLog(socket, error.message);
     })
     .then(()=> {
             rl.prompt();
     });
 };
 
-exports.editCommand = (rl, id) => {
+exports.editCommand = (socket, rl, id) => {
     validarId(id)
     .then(id => models.quiz.findById(id))
     .then(quiz => {
@@ -136,21 +136,21 @@ exports.editCommand = (rl, id) => {
             return quiz.save();
     })
     .then(quiz => {
-            log(` Se ha cambiado el quiz ${giveColor(id, 'magenta')} por : ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
+            log(socket, ` Se ha cambiado el quiz ${giveColor(id, 'magenta')} por : ${quiz.question} ${giveColor("=>", "magenta")} ${quiz.answer}`);
     })
     .catch(Sequelize.ValidationError, error => {
-            errorLog("El quiz es erroneo: ");
+            errorLog(socket, "El quiz es erroneo: ");
         error.errors.forEach(({message}) => errorlog(message));
     })
     .catch(error => {
-            errorLog(error.message);
+            errorLog(socket, error.message);
     })
     .then(() => {
             rl.prompt();
     });
 };
 
-exports.testCommand = (rl, id) => {
+exports.testCommand = (socket, rl, id) => {
     validarId(id)
     .then(id => models.quiz.findById(id))
     .then(quiz => {
@@ -160,24 +160,24 @@ exports.testCommand = (rl, id) => {
             return makeQuestion(rl, quiz.question+": ")
             .then(a => {
                 if(quiz.answer.toLowerCase().trim() === a.toLowerCase().trim()){
-                    log("Su respuesta es:");
-                    log('Correcta', 'green');
+                    log(socket, "Su respuesta es:");
+                    log(socket, 'Correcta', 'green');
                     rl.prompt();
                 }else{
-                    log("Su respuesta es:");
-                    log('Incorrecta', 'red');
+                    log(socket, "Su respuesta es:");
+                    log(socket, 'Incorrecta', 'red');
                     rl.prompt();
                 }
             });
         }
     })
     .catch(error => {
-        errorLog(error.message);
+        errorLog(socket, error.message);
         rl.prompt();
     });
 };
 
-exports.playCommand = rl => {
+exports.playCommand = (socket, rl) => {
     let score = 0;
     let porpreguntar = [];
     models.quiz.findAll()
@@ -187,9 +187,9 @@ exports.playCommand = rl => {
         });
     const playCont = () => {
         if(porpreguntar.length === 0){
-            log(`${giveColor('No hay preguntas disponibles', 'red')}`);
-            log("Fin");
-            log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
+            log(socket, `${giveColor('No hay preguntas disponibles', 'red')}`);
+            log(socket, "Fin");
+            log(socket, `${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
             rl.prompt();
         }else{
             let id = Math.round(Math.random()*(porpreguntar.length-1));
@@ -198,34 +198,35 @@ exports.playCommand = rl => {
             .then(a => {
                 if(quiz.answer.toLowerCase().trim() === a.toLowerCase().trim()){
                     score++;
-                    log('CORRECTO', 'green');
-                    log('Lleva ' +score+ ' aciertos', 'green');
+                    log(socket, 'CORRECTO', 'green');
+                    log(socket, 'Lleva ' +score+ ' aciertos', 'green');
                     porpreguntar.splice(id, 1);
                     playCont();
                 }else{
-                    log('INCORRECTO', 'red');
-                    log("Fin");
-                    log(`${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
+                    log(socket, 'INCORRECTO', 'red');
+                    log(socket, "Fin");
+                    log(socket, `${giveColor('Has tenido', 'cyan')}: ${giveColor(score, 'green')} aciertos`);
                     rl.prompt();
                 }
             })
             .catch(error => {
-                    errorLog(error.message);
+                    errorLog(socket, error.message);
             });
         }
     };
     playCont();
 })
 .catch(error => {
-        errorLog(error.message);
+        errorLog(socket, error.message);
 });
 };
 
 exports.creditCommand = rl => {
-    log(`Práctica realizada por: ${giveColor('Alvaro Escobosa Lopez', 'yellow')}`);
+    log(socket, `Práctica realizada por: ${giveColor('Alvaro Escobosa Lopez', 'yellow')}`);
     rl.prompt();
 };
 
-exports.quitCommand = rl =>{
+exports.quitCommand = (socket, rl) =>{
     rl.close();
+    socket.end();
 }

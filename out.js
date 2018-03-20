@@ -9,16 +9,16 @@ const giveColor = (msg, color) => {
     return msg;
 }
 
-const log = (msg, color) => {
-    console.log(giveColor(msg, color));
+const log = (socket, msg, color) => {
+    socket.write(giveColor(msg, color) + "\n");
 }
 
-const bigLog = (msg, color) => {
-    log(figlet.textSync(msg, {horizontalLayout: 'full'}), color);
+const bigLog = (socket, msg, color) => {
+    log(socket, figlet.textSync(msg, {horizontalLayout: 'full'}), color);
 }
 
-const errorLog = (emsg) => {
-    console.log(`${giveColor("Error", "red")}: ${giveColor(giveColor(emsg, "red"), "bgYellowBright")}`);
+const errorLog = (socket, emsg) => {
+    socket.write(`${giveColor("Error", "red")}: ${giveColor(giveColor(emsg, "red"), "bgYellowBright")}\n`);
 };
 
 exports = module.exports = {

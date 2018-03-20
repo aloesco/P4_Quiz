@@ -221,8 +221,9 @@ exports.playCommand = (socket, rl) => {
 });
 };
 
-exports.creditCommand = rl => {
-    log(socket, `Práctica realizada por: ${giveColor('Alvaro Escobosa Lopez', 'yellow')}`);
+exports.creditCommand = (socket, rl) => {
+    log(socket, `Práctica realizada por:`);
+    log(socket, `${giveColor('Alvaro Escobosa Lopez', 'yellow')}`);
     rl.prompt();
 };
 
